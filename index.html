@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Deformable Neural Radiance Fields creates free-viewpoint portraits (nerfies) from casually captured videos.">
+  <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PIAD: Pose and Illumination agnostic Anomaly Detection</title>
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.3.0/flickity.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma/css/bulma.min.css">
+  <style>
+
+    img {
+      background-color: #ffffff; /* 设置图片背景为白色 */
+      padding: 0; /* 确保图片没有内边距 */
+      display: block; /* 防止图片被 inline 样式干扰 */
+    }
+
+    .gallery {
+      width: 90%;
+      margin: 20px auto;
+    }
+
+    .gallery-cell {
+      width: 100%; /* 每个页面占满窗口 */
+      display: flex;
+      flex-wrap: wrap; /* 启用换行布局 */
+      justify-content: space-around;
+    }
+
+    .grid-item {
+      width: 30%; /* 每个格子宽度为页面宽度的30% */
+      margin: 5px;
+      text-align: center;
+    }
+
+    .grid-item img {
+      width: 75%;
+      height: auto;
+    }
+
+    .styled-paragraph {  
+            font-weight: bold;       /* 加粗 */  
+            font-size: 18px;        /* 设置字体大小，可以根据需要调整 */  
+            text-align: center;      /* 居中对齐 */  
+            margin-top: 2px;         /* 调整上边距，您可以根据需要设置更小的值 */
+        } 
+    
+    .image {  
+            margin-bottom: 2px; /* 调整下边距，您可以根据需要设置更小的值 */  
+            margin-top: 10px !important
+        } 
+
+    .columns {  
+    display: flex;  
+    flex-wrap: wrap; /* 允许换行 */  
+    align-items: center; /* 垂直居中对齐 */  
+    justify-content: space-around; /* 水平均匀分布 */  
+    }
+  </style>
+</head>
+<body>
+
+
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">PIAD: Pose and Illumination agnostic Anomaly Detection</h1>
+          
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="./Supplementary_Material.pdf" 
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span>Supplementary Material</span>
+                </a>
+              </span>
+          
+              
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="./README.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
+        free-viewpoint
+        portraits.
+      </h2>
+    </div>
+  </div>
+</section> -->
+
+
+<!-- <section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-steve">
+          <video poster="" id="steve" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/steve.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/chair-tp.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-shiba">
+          <video poster="" id="shiba" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/shiba.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-fullbody">
+          <video poster="" id="fullbody" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/fullbody.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-blueshirt">
+          <video poster="" id="blueshirt" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/blueshirt.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-mask">
+          <video poster="" id="mask" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/mask.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-coffee">
+          <video poster="" id="coffee" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/coffee.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-toby">
+          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/toby2.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      
+      <!-- Flickity画廊 -->
+      <div class="gallery js-flickity" data-flickity-options='{ "wrapAround": true, "pageDots": false }'>
+        <!-- 第一页 -->
+        <div class="gallery-cell">
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/04USB48.png" alt="query image">
+            <p>query image</p>
+          </div>
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/04USB48_om.gif" alt="OmniPoseAD pose estimation">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/04USB48_sp.gif" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/04USB48_ours.gif" alt="ours">
+            <p>ours</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/04USB_48_png_om.png" alt="OmniPoseAD">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/48.png" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/04USB_48_png_ours.png" alt="ours">
+            <p>ours</p>
+          </div>
+        </div>
+        
+        <!-- 第二页 -->
+        <div class="gallery-cell">
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/02Tube22.png" alt="query image">
+            <p>query image</p>
+          </div>
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/02Tube22_om.gif" alt="OmniPoseAD pose estimation">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/02Tube22_sp.gif" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/02Tube22_ours.gif" alt="ours">
+            <p>ours</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/02Tube_22_png_om.png" alt="OmniPoseAD">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/22.png" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/02Tube_22_png_ours.png" alt="ours">
+            <p>ours</p>
+          </div>
+        </div>
+
+        <!-- 第三页 -->
+        <div class="gallery-cell">
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/03Cup57.png" alt="query image">
+            <p>query image</p>
+          </div>
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/03Cup57_om.gif" alt="OmniPoseAD pose estimation">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/03Cup57_sp.gif" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/03Cup57_ours.gif" alt="ours">
+            <p>ours</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/03Cup_57_png_om.png" alt="OmniPoseAD">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/57.png" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/03Cup_57_png_ours.png" alt="ours">
+            <p>ours</p>
+          </div>
+        </div>
+
+        <!-- 第四页 -->
+        <div class="gallery-cell">
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/01Valve72.png" alt="query image">
+            <p>query image</p>
+          </div>
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/01Valve72_om.gif" alt="OmniPoseAD pose estimation">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/01Valve72_sp.gif" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/01Valve72_ours.gif" alt="ours">
+            <p>ours</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/01Valve_72_png_om.png" alt="OmniPoseAD">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/72.png" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/01Valve_72_png_ours.png" alt="ours">
+            <p>ours</p>
+          </div>
+        </div>
+
+        <!-- 第五页 -->
+        <div class="gallery-cell">
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/06PaperCup49.png" alt="query image">
+            <p>query image</p>
+          </div>
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/06PaperCup49_om.gif" alt="OmniPoseAD pose estimation">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/06PaperCup49_sp.gif" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/06PaperCup49_ours.gif" alt="ours">
+            <p>ours</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/06PaperCup_49_png_om.png" alt="OmniPoseAD">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/49.png" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/06PaperCup_49_png_ours.png" alt="ours">
+            <p>ours</p>
+          </div>
+        </div>
+        
+        <!-- 第六页 -->
+        <div class="gallery-cell">
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/11Filter0.png" alt="query image">
+            <p>query image</p>
+          </div>
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/11Filter0_om.gif" alt="OmniPoseAD pose estimation">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/11Filter0_sp.gif" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/11Filter0_ours.gif" alt="ours">
+            <p>ours</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/11Filter_0_png_om.png" alt="OmniPoseAD">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/0.png" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/11Filter_0_png_ours.png" alt="ours">
+            <p>ours</p>
+          </div>
+        </div>
+
+        <!-- 第七页 -->
+        <div class="gallery-cell">
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel30.png" alt="query image">
+            <p>query image</p>
+          </div>
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel30_om.gif" alt="OmniPoseAD pose estimation">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel30_sp.gif" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel30_ours.gif" alt="ours">
+            <p>ours</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel_30_png_om.png" alt="OmniPoseAD">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/30.png" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel_30_png_ours.png" alt="ours">
+            <p>ours</p>
+          </div>
+        </div>
+
+        <!-- 第八页 -->
+        <div class="gallery-cell">
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora28.png" alt="query image">
+            <p>query image</p>
+          </div>
+          <div class="grid-item">
+            
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora28_om.gif" alt="OmniPoseAD pose estimation">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora28_sp.gif" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora28_ours.gif" alt="ours">
+            <p>ours</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora_28_png_om.png" alt="OmniPoseAD">
+            <p>OmniPoseAD</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/28.png" alt="SplatPose">
+            <p>SplatPose</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora_28_png_ours.png" alt="ours">
+            <p>ours</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.3.0/flickity.pkgd.min.js"></script>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We introduce the Pose and Illumination agnostic Anomaly Detection (PIAD) problem, a generalization of pose-agnostic anomaly detection (PAD). 
+            Being illumination agnostic is critical, as it relaxes the assumption that training data for an object has to be acquired in the same light configuration of the query images that we want to test. 
+            Moreover, even if the object is placed within the same capture environment, being illumination agnostic implies that we can relax the assumption that the relative pose between environment light and query object has to match the one in the training data. 
+            
+          </p>
+          <p>
+            We introduce a new dataset to study this problem, containing both synthetic and real-world examples, propose a new baseline for PIAD, and demonstrate how our baseline provides state-of-the-art results in both PAD and PIAD, not only in the new proposed dataset, but also in existing datasets that were designed for the simpler PAD problem. 
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <!-- <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Pipeline</h2>
+        <video id="pipeline"
+               controls
+               muted
+               preload
+               loop
+               autoplay
+               playsinline
+               width="100%">
+          <source src="./static/videos/pipeline4.mp4"
+                  type="video/mp4">
+      </div>
+    </div> -->
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!--/ Matting. -->
+
+    <!-- Animation. -->
+    <div class="columns is-centered">
+      
+      <div class="column is-full-width">
+        <h2 class="title is-3">RGB&Reflectance Gaussian vs. RGB Gaussian</h2>
+        <div class="content has-text-justified">
+          <p>
+            We present the camera pose estimation results using RGB&Reflectance Gaussian and RGB Gaussian separately. 
+            When there is inconsistent lighting between the training set and the query images, using RGB&Reflectance Gaussian is more robust.
+
+          </p>
+        </div>
+        <!-- <div class="gallery-cell"> -->
+        <div class="columns is-vcentered interpolation-panel">
+          <div class="grid-item">
+            <img src="./static/images/13wheel_t.png" alt="OmniPoseAD pose estimation">
+            <p>Training data</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel_rgb.gif" alt="OmniPoseAD pose estimation">
+            <p>Pose estimation by RGB Gaussian</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel_10_png.png" alt="OmniPoseAD pose estimation">
+            <p>AD Heat map</p>
+          </div>
+          
+          <div class="grid-item">
+            <img src="./static/images/13Wheel_q.png" alt="OmniPoseAD pose estimation">
+            <p>Query image</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel_re.gif" alt="OmniPoseAD pose estimation">
+            <p>Pose estimation by RGB&Relf. Gaussian</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/13Wheel_10_png_o.png" alt="OmniPoseAD pose estimation">
+            <p>AD Heat map</p>
+          </div>
+        </div>
+        <br>
+
+        <div class="columns is-vcentered interpolation-panel">
+          <div class="grid-item">
+            <img src="./static/images/Amphora_t.png" alt="OmniPoseAD pose estimation">
+            <p>Training data</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora_rgb.gif" alt="OmniPoseAD pose estimation">
+            <p>Pose estimation by RGB Gaussian</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora_61.png" alt="OmniPoseAD pose estimation">
+            <p>AD Heat map</p>
+          </div>
+          
+          <div class="grid-item">
+            <img src="./static/images/Amphora_q.png" alt="OmniPoseAD pose estimation">
+            <p>Query image</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora_relf.gif" alt="OmniPoseAD pose estimation">
+            <p>Pose estimation by RGB&Relf. Gaussian</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Amphora_61_png_o.png" alt="OmniPoseAD pose estimation">
+            <p>AD Heat map</p>
+          </div>
+        </div>
+        <br>
+
+        <div class="columns is-vcentered interpolation-panel">
+          <div class="grid-item">
+            <img src="./static/images/Teapot_t.png" alt="OmniPoseAD pose estimation">
+            <p>Training data</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Teapot_rgb.gif" alt="OmniPoseAD pose estimation">
+            <p>Pose estimation by RGB Gaussian</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Teapot_3_png.png" alt="OmniPoseAD pose estimation">
+            <p>AD Heat map</p>
+          </div>
+          
+          <div class="grid-item">
+            <img src="./static/images/Teapot_q.png" alt="OmniPoseAD pose estimation">
+            <p>Query image</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Teapot_relf.gif" alt="OmniPoseAD pose estimation">
+            <p>Pose estimation by RGB&Relf. Gaussian</p>
+          </div>
+          <div class="grid-item">
+            <img src="./static/images/Teapot_3_png_o.png" alt="OmniPoseAD pose estimation">
+            <p>AD Heat map</p>
+          </div>
+        </div>
+        <br><br>
+
+        <h2 class="title is-3">Dataset</h2>
+        <h3 class="title is-4">Introduction</h3>
+        <div class="content has-text-justified">
+          <p>
+            We introduce a new dataset to study the PIAD problem, containing both synthetic and real-world examples. 
+            It comprises a total of 11268 multi-view images of 30 distinct industry products, including 16 synthetic and 14 real-world products.
+            The synthetic dataset is generated using Blender, and the real-world dataset is captured using a smart phone (Redmi K40) mounted on a gimbal.
+            The dataset is designed to be challenging, with a variety of poses, illuminations, materials and anomaly types. 
+            The dataset will be released after acceptance.
+          </p>
+        </div>
+        <h3 class="title is-4">Dataset visualization</h3>
+        <div class="content has-text-justified">
+          <p>
+            We visualize part of our dataset to demonstrate the diversity of views, materials, and types of anomalies within the dataset.
+          </p>
+        </div>
+        <h4 class="title is-5">Synthetic</h3>
+        <p class="styled-paragraph">Motor</p>
+        <img class="image" src="./static/images/d1.png"/>
+        <br>
+        <p class="styled-paragraph">Spring</p>
+        <img class="image" src="./static/images/d2.png"/>
+        <br>
+        <p class="styled-paragraph">Keyring</p>
+        <img src="./static/images/d3.png"/>
+        <br>
+        <p class="styled-paragraph">Axletree</p>
+        <img src="./static/images/d4.png"/>
+        <br>
+        <p class="styled-paragraph">Can</p>
+        <img src="./static/images/d5.png"/>
+        <br>
+        <p class="styled-paragraph">Gear</p>
+        <img src="./static/images/d6.png"/>
+        <br>
+        <p class="styled-paragraph">Sprockets</p>
+        <img src="./static/images/d8.png"/>
+        <br>
+        <p class="styled-paragraph">Picker</p>
+        <img src="./static/images/d7.png"/>
+        <br>
+        <p class="styled-paragraph">Box</p>
+        <img src="./static/images/d9.png"/>
+        <br>
+        <p class="styled-paragraph">Parts</p>
+        <img src="./static/images/d10.png"/>
+        <br>
+
+        <h4 class="title is-5">Real</h3>
+        <p class="styled-paragraph">Valve</p>
+        <img src="./static/images/d11.png"/>
+        <br>
+        <p class="styled-paragraph">Tube</p>
+        <img src="./static/images/d12.png"/>
+        <br>
+        <p class="styled-paragraph">Cup</p>
+        <img src="./static/images/d13.png"/>
+        <br>
+        <p class="styled-paragraph">USB</p>
+        <img src="./static/images/d14.png"/>
+        <br>
+        <p class="styled-paragraph">Cube</p>
+        <img src="./static/images/d15.png"/>
+        <br>
+        <p class="styled-paragraph">PaperCup</p>
+        <img src="./static/images/d16.png"/>
+        <br>
+        <p class="styled-paragraph">Lighter</p>
+        <img src="./static/images/d17.png"/>
+        <br>
+        <p class="styled-paragraph">Filter</p>
+        <img src="./static/images/d18.png"/>
+        <br>
+        <p class="styled-paragraph">Wheel</p>
+        <img src="./static/images/d19.png"/>
+        <br>
+        <p class="styled-paragraph">Bearing</p>
+        <img src="./static/images/d20.png"/>
+        <br>
+      </div>
+    </div>
+
+  </div>
+</section> -->
+
+
+
+</body>
+</html>
