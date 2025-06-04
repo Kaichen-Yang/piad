@@ -600,7 +600,78 @@
           </p>
         </div>
       </div>
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+          <div class="publication-video">
+            <iframe src="https://www.youtube.com/embed/ethCDNliL10?si=FrKlFT1jpaxV5ceu" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
+      </div>
+      <div class="column is-full">
+        <h2 class="title is-3">Poster</h2>
+          <div class="magnifier-container" style="position: relative; width: 100%; max-width: 1200px; margin: 0 auto;">
+            <img class="image poster-image" src="./static/images/PIAD_poster_version_m_5.png" style="width: 100%;"/>
+            <div class="magnifier-lens" style="display: none; position: absolute; width: 150px; height: 150px; border: 2px solid #ccc; border-radius: 50%; pointer-events: none;"></div>
+          </div>
+          <style>
+            .magnifier-container {
+              cursor: none;
+            }
+            .magnifier-lens {
+              background-repeat: no-repeat;
+              z-index: 999;
+              box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            }
+          </style>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              const container = document.querySelector('.magnifier-container');
+              const image = container.querySelector('.poster-image');
+              const lens = container.querySelector('.magnifier-lens');
+              
+              container.addEventListener('mousemove', function(e) {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // 确保放大镜在容器内
+                if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+                  lens.style.display = 'block';
+                  
+                  // 计算放大镜位置
+                  const lensHalfWidth = lens.offsetWidth / 2;
+                  const lensHalfHeight = lens.offsetHeight / 2;
+                  
+                  let lensX = x - lensHalfWidth;
+                  let lensY = y - lensHalfHeight;
+                  
+                  // 防止放大镜超出边界
+                  lensX = Math.max(0, Math.min(lensX, rect.width - lens.offsetWidth));
+                  lensY = Math.max(0, Math.min(lensY, rect.height - lens.offsetHeight));
+                  
+                  lens.style.left = lensX + 'px';
+                  lens.style.top = lensY + 'px';
+                  
+                  // 计算背景位置和大小
+                  const zoomFactor = 2;
+                  const bgX = (x * zoomFactor - lensHalfWidth);
+                  const bgY = (y * zoomFactor - lensHalfHeight);
+                  
+                  lens.style.backgroundImage = `url(${image.src})`;
+                  lens.style.backgroundSize = (rect.width * zoomFactor) + 'px';
+                  lens.style.backgroundPosition = `-${bgX}px -${bgY}px`;
+                }
+              });
+              
+              container.addEventListener('mouseleave', function() {
+                lens.style.display = 'none';
+              });
+            });
+          </script>
+      </div>
     </div>
+
+          
+
     <!--/ Abstract. -->
 
     <!-- Paper video. -->
